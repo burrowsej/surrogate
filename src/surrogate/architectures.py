@@ -1,4 +1,4 @@
-"""Factory functions that build dgpsi GP and DGP models."""
+"""Build dgpsi GP and DGP models."""
 
 from __future__ import annotations
 
@@ -76,7 +76,7 @@ def build_dgp(
 
     Args:
         X: Input array of shape ``(n, d)``.
-        Y: Output array of shape ``(n, k)``  -- k output dimensions.
+        Y: Output array of shape ``(n, k)`` - k output dimensions.
         depth: Number of DGP layers (minimum 2).
         kernel_name: Kernel name (e.g. ``"matern25"``, ``"sexp"``).
         n_iter: SEM iterations for training.
@@ -85,7 +85,7 @@ def build_dgp(
         n_imputations: Number of imputations for the emulator.
 
     Returns:
-        Tuple of ``(emulator, dgp)``  -- ready-to-predict emulator wrapping
+        Tuple of ``(emulator, dgp)`` - ready-to-predict emulator wrapping
         the trained DGP, and the raw DGP object.
     """
     if Y.ndim == 1:
@@ -98,7 +98,6 @@ def build_dgp(
     kern_name = _resolve_kernel_name(kernel_name)
 
     # Build layer structure
-    # Layer 1: D GP nodes (one per input dim), each taking one input dimension
     layer1 = []
     for i in range(d):
         layer1.append(
@@ -112,7 +111,7 @@ def build_dgp(
             )
         )
 
-    # Optional intermediate layers (depth > 2)
+    # Intermediate layers (depth > 2)
     intermediate_layers = []
     for _ in range(depth - 2):
         n_nodes = d  # keep same width
@@ -129,7 +128,7 @@ def build_dgp(
             )
         intermediate_layers.append(layer)
 
-    # Final layer: K GP nodes (one per output), with global input connections
+    # Final layer: one node per output
     layer_final = []
     for j in range(k):
         layer_final.append(

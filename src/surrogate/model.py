@@ -1,4 +1,4 @@
-"""SurrogateModel  -- high-level DataFrame-in/DataFrame-out surrogate modelling."""
+"""Core SurrogateModel class."""
 
 from __future__ import annotations
 
@@ -17,10 +17,9 @@ logger = logging.getLogger(__name__)
 
 
 class SurrogateModel:
-    """A surrogate model wrapping dgpsi with a pandas-native interface.
+    """Pandas-friendly wrapper around dgpsi.
 
-    Automatically selects between a single-layer GP (fast, single-output, low-dim)
-    and a Deep GP (multi-output, high-dim, nonlinear) based on the data.
+    Picks between a single-layer GP and a Deep GP based on the data.
 
     Args:
         categorical_columns: Column names to treat as categorical.
@@ -28,7 +27,7 @@ class SurrogateModel:
         model_type: Force a model tier (``"gp"`` or ``"dgp"``) or let the
             class choose with ``"auto"``.
         depth: Number of DGP layers (ignored when ``model_type="gp"``).
-        kernel: Kernel name  -- ``"matern25"`` or ``"sexp"``.
+        kernel: Kernel name - ``"matern25"`` or ``"sexp"``.
         dim_threshold: Encoded input dimensions above which *auto* selects
             DGP even for single-output problems.
     """
@@ -58,9 +57,6 @@ class SurrogateModel:
         self._train_Y: np.ndarray | None = None
         self._fitted = False
 
-    # ------------------------------------------------------------------
-    # Fit
-    # ------------------------------------------------------------------
     def fit(
         self,
         X: pd.DataFrame,
@@ -132,9 +128,6 @@ class SurrogateModel:
             return "dgp"
         return "gp"
 
-    # ------------------------------------------------------------------
-    # Predict
-    # ------------------------------------------------------------------
     def predict(self, X: pd.DataFrame) -> dict[str, pd.DataFrame]:
         """Return mean, std, and 95% credible-interval bounds.
 
@@ -165,7 +158,6 @@ class SurrogateModel:
         }
 
     def _predict_raw(self, X_enc: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
-        """Return (mean, variance) arrays in *scaled* output space."""
         if self._resolved_type == "gp":
             mu, var = self._gp_model.predict(X_enc)
             return mu, var
@@ -177,9 +169,6 @@ class SurrogateModel:
                 var = np.column_stack(var)
             return np.asarray(mu), np.asarray(var)
 
-    # ------------------------------------------------------------------
-    # Sample (jointly drawn across outputs)
-    # ------------------------------------------------------------------
     def sample(self, X: pd.DataFrame, n_samples: int = 50) -> np.ndarray:
         """Draw joint posterior samples.
 
@@ -215,9 +204,6 @@ class SurrogateModel:
         samples = samples * std + mean
         return samples
 
-    # ------------------------------------------------------------------
-    # Output correlation
-    # ------------------------------------------------------------------
     def predict_correlation(self, X: pd.DataFrame, n_samples: int = 200) -> np.ndarray:
         """Estimate output correlation matrices from posterior samples.
 
@@ -238,11 +224,7 @@ class SurrogateModel:
             corr[i] = c if c.ndim == 2 else np.ones((1, 1))
         return corr
 
-    # ------------------------------------------------------------------
-    # Score (LOO cross-validation)
-    # ------------------------------------------------------------------
     def _loo_raw(self) -> tuple[np.ndarray, np.ndarray | None]:
-        """Return raw LOO (mean, variance) arrays in scaled output space."""
         self._check_fitted()
         if self._resolved_type == "gp":
             mu, var = self._gp_model.loo()
@@ -310,9 +292,8 @@ class SurrogateModel:
             "rmse": dict(zip(cols, rmse_orig.tolist())),
         }
 
-    # ------------------------------------------------------------------
-    # Active learning  -- suggest next evaluation point(s)
-    # ------------------------------------------------------------------
+    # --- Active learning ---
+
     def suggest_next(
         self,
         candidates: pd.DataFrame,
@@ -355,9 +336,8 @@ class SurrogateModel:
         result["_score"] = agg_scores[top_idx]
         return result.reset_index(drop=True)
 
-    # ------------------------------------------------------------------
-    # Serialization
-    # ------------------------------------------------------------------
+    # --- Serialization ---
+
     _MODELS_DIR = Path("models")
 
     def save(self, path: str | Path | None = None) -> None:
@@ -393,9 +373,6 @@ class SurrogateModel:
             raise TypeError(f"Expected SurrogateModel, got {type(obj).__name__}")
         return obj
 
-    # ------------------------------------------------------------------
-    # Internals
-    # ------------------------------------------------------------------
     def _check_fitted(self):
         if not self._fitted:
             raise RuntimeError("Model has not been fitted. Call .fit() first.")

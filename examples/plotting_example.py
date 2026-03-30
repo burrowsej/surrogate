@@ -1,4 +1,4 @@
-"""Plotting example  -- visualise model diagnostics.
+"""Plotting example - visualise model diagnostics.
 
 Requires the optional plot dependencies::
 
@@ -62,7 +62,7 @@ fig = calibration_plot(model)
 fig.savefig("models/calibration.png", dpi=150)
 
 # %% [markdown]
-# ## 4. 1D slice plot  -- sweep x1
+# ## 4. 1D slice plot - sweep x1
 
 # %%
 X_centre = pd.DataFrame({"x1": [0.5], "x2": [0.5], "category": ["low"]})

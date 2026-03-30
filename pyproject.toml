@@ -21,6 +21,10 @@ plot = [
     "matplotlib>=3.7",
     "seaborn>=0.13",
 ]
+docs = [
+    "zensical",
+    "mkdocstrings-python",
+]
 
 [build-system]
 requires = ["hatchling"]
