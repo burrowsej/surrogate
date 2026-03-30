@@ -8,14 +8,14 @@ and a Deep GP (multi-output, high-dim, nonlinear) based on the data.
 
 ## Features
 
-- **pandas-native interface** — pass DataFrames in, get DataFrames out
-- **Automatic model selection** — GP or DGP chosen based on output count and input dimensionality
-- **Mixed input types** — continuous and categorical columns handled automatically
-- **Uncertainty quantification** — predictions include mean, std, and 95% credible intervals
-- **Output correlation** — estimate cross-output correlations from posterior samples
-- **Active learning** — suggest the most informative next experiment (ALM, MICE, VIGF)
-- **LOO cross-validation** — R² and RMSE diagnostics without re-fitting
-- **Save/load** — persist fitted models to disk
+- **pandas-native interface**  -- pass DataFrames in, get DataFrames out
+- **Automatic model selection**  -- GP or DGP chosen based on output count and input dimensionality
+- **Mixed input types**  -- continuous and categorical columns handled automatically
+- **Uncertainty quantification**  -- predictions include mean, std, and 95% credible intervals
+- **Output correlation**  -- estimate cross-output correlations from posterior samples
+- **Active learning**  -- suggest the most informative next experiment (ALM, MICE, VIGF)
+- **LOO cross-validation**  -- R² and RMSE diagnostics without re-fitting
+- **Save/load**  -- persist fitted models to disk
 
 ## Installation
 
@@ -48,7 +48,7 @@ scores = model.score()
 scores["r2"]    # {"output_1": 0.98, ...}
 scores["rmse"]  # {"output_1": 0.12, ...}
 
-# Active learning — suggest next experiment
+# Active learning  -- suggest next experiment
 suggestions = model.suggest_next(candidates, method="ALM", n_suggestions=3)
 
 # Save and load
@@ -119,7 +119,7 @@ uv run pytest
 | `predict_correlation(X)` | Output correlation matrices per point             |
 | `loo_predict()`      | LOO predictions (mean, std, actual)                  |
 | `score()`            | LOO cross-validation (R², RMSE)                       |
-| `suggest_next(candidates)` | Active learning — best next point(s)            |
+| `suggest_next(candidates)` | Active learning  -- best next point(s)            |
 | `save(path)` / `load(path)` | Persist and restore fitted models              |
 
 **Note:** All output columns (`Y`) must be continuous (numeric). Categorical

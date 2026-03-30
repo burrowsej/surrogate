@@ -76,7 +76,7 @@ def build_dgp(
 
     Args:
         X: Input array of shape ``(n, d)``.
-        Y: Output array of shape ``(n, k)`` — k output dimensions.
+        Y: Output array of shape ``(n, k)``  -- k output dimensions.
         depth: Number of DGP layers (minimum 2).
         kernel_name: Kernel name (e.g. ``"matern25"``, ``"sexp"``).
         n_iter: SEM iterations for training.
@@ -85,7 +85,7 @@ def build_dgp(
         n_imputations: Number of imputations for the emulator.
 
     Returns:
-        Tuple of ``(emulator, dgp)`` — ready-to-predict emulator wrapping
+        Tuple of ``(emulator, dgp)``  -- ready-to-predict emulator wrapping
         the trained DGP, and the raw DGP object.
     """
     if Y.ndim == 1:

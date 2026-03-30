@@ -1,4 +1,4 @@
-"""Basic usage example — fit, predict, score, suggest next, save/load.
+"""Basic usage example  -- fit, predict, score, suggest next, save/load.
 
 This file uses ``# %%`` cell markers so it can be run interactively as a
 notebook in VS Code. It also runs as a normal script.
@@ -81,7 +81,7 @@ print("Output correlation at first test point:")
 print(corr[0])
 
 # %% [markdown]
-# ## 6. Active learning — suggest next experiment
+# ## 6. Active learning  -- suggest next experiment
 
 # %%
 candidates = pd.DataFrame(

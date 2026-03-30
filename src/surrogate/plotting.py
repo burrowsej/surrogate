@@ -79,7 +79,7 @@ def parity_plot(
 
     Points on the diagonal indicate perfect predictions. Systematic
     deviations reveal regions where the surrogate is biased. This is
-    the standard first check after fitting — use it to decide whether
+    the standard first check after fitting  -- use it to decide whether
     the model is accurate enough or needs more training data.
 
     Args:
@@ -226,11 +226,11 @@ def slice_plot(
     output_columns: list[str] | None = None,
     ax: Axes | None = None,
 ) -> Figure:
-    """1D slice plot — sweep one input, fix others at centre values.
+    """1D slice plot  -- sweep one input, fix others at centre values.
 
     Useful for understanding the effect of a single input on each output
     while holding everything else constant. The 95% credible interval
-    ribbon shows where the surrogate is uncertain — wide ribbons indicate
+    ribbon shows where the surrogate is uncertain  -- wide ribbons indicate
     sparse training data in that region.
 
     Args:
@@ -306,7 +306,7 @@ def correlation_heatmap(
 ) -> Figure:
     """Heatmap of output correlations at a given input point.
 
-    Shows how outputs co-vary according to the surrogate’s posterior.
+    Shows how outputs co-vary according to the surrogate's posterior.
     Strong correlations suggest shared underlying drivers. Most useful
     with three or more outputs, or when deciding whether outputs can
     be modelled independently.
@@ -328,6 +328,7 @@ def correlation_heatmap(
     corr = model.predict_correlation(X, n_samples=n_samples)
     matrix = corr[point_index]
     cols = model._scaler._columns
+    mask = np.triu(np.ones_like(matrix, dtype=bool))
 
     if ax is None:
         fig, ax = plt.subplots(figsize=(5, 4.5), layout="constrained")
@@ -336,13 +337,14 @@ def correlation_heatmap(
 
     sns.heatmap(
         matrix,
+        mask=mask,
         annot=True,
         fmt=".2f",
         xticklabels=cols,
         yticklabels=cols,
         vmin=-1,
         vmax=1,
-        cmap="RdBu_r",
+        cmap="PRGn",
         ax=ax,
     )
     ax.set_title(f"Output correlation (point {point_index})")
@@ -360,7 +362,7 @@ def convergence_plot(
 
     Shows how model accuracy improves as new points are added via
     ``suggest_next``. Use this to decide when to stop collecting data
-    — a plateau indicates diminishing returns from additional experiments.
+     -- a plateau indicates diminishing returns from additional experiments.
 
     Args:
         metrics: List of dicts as returned by ``model.score()``, one per

@@ -1,4 +1,4 @@
-"""SurrogateModel — high-level DataFrame-in/DataFrame-out surrogate modelling."""
+"""SurrogateModel  -- high-level DataFrame-in/DataFrame-out surrogate modelling."""
 
 from __future__ import annotations
 
@@ -28,7 +28,7 @@ class SurrogateModel:
         model_type: Force a model tier (``"gp"`` or ``"dgp"``) or let the
             class choose with ``"auto"``.
         depth: Number of DGP layers (ignored when ``model_type="gp"``).
-        kernel: Kernel name — ``"matern25"`` or ``"sexp"``.
+        kernel: Kernel name  -- ``"matern25"`` or ``"sexp"``.
         dim_threshold: Encoded input dimensions above which *auto* selects
             DGP even for single-output problems.
     """
@@ -311,7 +311,7 @@ class SurrogateModel:
         }
 
     # ------------------------------------------------------------------
-    # Active learning — suggest next evaluation point(s)
+    # Active learning  -- suggest next evaluation point(s)
     # ------------------------------------------------------------------
     def suggest_next(
         self,

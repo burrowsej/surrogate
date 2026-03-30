@@ -1,4 +1,4 @@
-"""Shared test fixtures — synthetic data generators."""
+"""Shared test fixtures  -- synthetic data generators."""
 
 import numpy as np
 import pandas as pd

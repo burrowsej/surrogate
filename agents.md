@@ -10,6 +10,4 @@
 - Add type annotations
 - 100 characters per line
 - Prefer pandas to raw numpy
-
-
-
+- Don't use confusing characters not common in coding, e.g. em dash or U+2019
