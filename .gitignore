@@ -5,8 +5,12 @@ models/*
 # Python bytecode
 __pycache__/
 
+# Built docs
+site/
+
 # Hidden files and directories (editors, OS, etc.)
 .*
 !.gitignore
 !.gitkeep
 !.vscode/
+!.github/

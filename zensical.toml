@@ -1,0 +1,58 @@
+[project]
+site_name = "surrogate"
+site_description = "DataFrame-in/DataFrame-out surrogate modelling with Deep Gaussian Processes"
+site_author = "Ed Burrows"
+copyright = "&copy; 2026 Ed Burrows"
+repo_url = "https://github.com/burrowsej/surrogate"
+
+nav = [
+    {"Home" = "index.md"},
+    {"Getting started" = "getting-started.md"},
+    {"What is surrogate modelling?" = "background.md"},
+    {"Guide" = [
+        "guide/basic-usage.md",
+        "guide/plotting.md",
+        "guide/active-learning.md",
+    ]},
+    {"API reference" = [
+        "reference/model.md",
+        "reference/plotting.md",
+        "reference/preprocessing.md",
+    ]},
+]
+
+[[project.theme.palette]]
+scheme = "slate"
+primary = "deep orange"
+accent = "deep orange"
+toggle.icon = "lucide/moon"
+toggle.name = "Switch to light mode"
+
+[[project.theme.palette]]
+scheme = "default"
+primary = "deep orange"
+accent = "deep orange"
+toggle.icon = "lucide/sun"
+toggle.name = "Switch to dark mode"
+
+[project.theme]
+features = [
+    "navigation.instant",
+    "navigation.sections",
+    "navigation.path",
+    "navigation.top",
+    "toc.follow",
+]
+icon.logo = "material/application-braces"
+language = "en"
+
+
+[project.plugins.mkdocstrings.handlers.python]
+paths = ["src"]
+
+[project.plugins.mkdocstrings.handlers.python.options]
+docstring_style = "google"
+show_source = false
+show_root_heading = true
+show_root_full_path = false
+members_order = "source"

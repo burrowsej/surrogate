@@ -1,4 +1,4 @@
-"""Plotting utilities for surrogate model diagnostics.
+"""Diagnostic plots for fitted surrogate models.
 
 Requires the optional ``plot`` dependency group::
 
@@ -44,6 +44,10 @@ _STYLE_APPLIED = False
 # Colorblind-safe palette (Okabe-Ito, widely recommended for accessibility).
 PALETTE = ["#0072B2", "#E69F00", "#009E73", "#CC79A7", "#56B4E9", "#D55E00", "#F0E442"]
 
+# Consistent figure dimensions across all plots.
+_FIG_H = 3.5
+_SUBPLOT_W = 4
+
 
 def _apply_style() -> None:
     """Apply a clean, accessible plot style (called once on first plot)."""
@@ -75,12 +79,7 @@ def parity_plot(
     *,
     ax: Axes | None = None,
 ) -> Figure:
-    """Predicted-vs-actual parity plot using LOO cross-validation.
-
-    Points on the diagonal indicate perfect predictions. Systematic
-    deviations reveal regions where the surrogate is biased. This is
-    the standard first check after fitting  -- use it to decide whether
-    the model is accurate enough or needs more training data.
+    """Predicted-vs-actual parity plot from LOO cross-validation.
 
     Args:
         model: A fitted ``SurrogateModel``.
@@ -104,7 +103,7 @@ def parity_plot(
         fig, axes = plt.subplots(
             1,
             n_out,
-            figsize=(5 * n_out, 4.5),
+            figsize=(_SUBPLOT_W * n_out, _FIG_H),
             squeeze=False,
             layout="constrained",
         )
@@ -148,22 +147,16 @@ def calibration_plot(
     n_levels: int = 20,
     ax: Axes | None = None,
 ) -> Figure:
-    """Uncertainty calibration curve from LOO predictions.
+    """Calibration curve: does the reported uncertainty match reality?
 
-    For each nominal confidence level, computes the fraction of LOO
-    observations that fall within the corresponding credible interval.
-    A well-calibrated model follows the diagonal. If the curve falls
-    below the diagonal the model is overconfident (intervals too narrow);
-    above means it is underconfident. Use this to assess whether the
-    reported uncertainty can be trusted for decision-making.
+    Plots observed coverage vs nominal confidence level. Points on the
+    diagonal mean the intervals are well-calibrated. Below = overconfident,
+    above = underconfident.
 
     Args:
         model: A fitted ``SurrogateModel``.
         n_levels: Number of confidence levels to evaluate.
         ax: Matplotlib axes to draw on. Created if ``None``.
-
-    Returns:
-        The matplotlib Figure.
     """
     plt = _import_matplotlib()
     _apply_style()
@@ -183,7 +176,7 @@ def calibration_plot(
         observed_coverage[i] = inside.mean()
 
     if ax is None:
-        fig, ax = plt.subplots(figsize=(5, 4.5), layout="constrained")
+        fig, ax = plt.subplots(figsize=(_SUBPLOT_W, _FIG_H), layout="constrained")
     else:
         fig = ax.get_figure()
 
@@ -226,12 +219,9 @@ def slice_plot(
     output_columns: list[str] | None = None,
     ax: Axes | None = None,
 ) -> Figure:
-    """1D slice plot  -- sweep one input, fix others at centre values.
+    """Sweep one input while holding the rest fixed.
 
-    Useful for understanding the effect of a single input on each output
-    while holding everything else constant. The 95% credible interval
-    ribbon shows where the surrogate is uncertain  -- wide ribbons indicate
-    sparse training data in that region.
+    Shows the predicted mean and 95% CI ribbon for each output.
 
     Args:
         model: A fitted ``SurrogateModel``.
@@ -272,7 +262,7 @@ def slice_plot(
         fig, axes = plt.subplots(
             1,
             n_out,
-            figsize=(5 * n_out, 4.5),
+            figsize=(_SUBPLOT_W * n_out, _FIG_H),
             squeeze=False,
             layout="constrained",
         )
@@ -306,20 +296,12 @@ def correlation_heatmap(
 ) -> Figure:
     """Heatmap of output correlations at a given input point.
 
-    Shows how outputs co-vary according to the surrogate's posterior.
-    Strong correlations suggest shared underlying drivers. Most useful
-    with three or more outputs, or when deciding whether outputs can
-    be modelled independently.
-
     Args:
         model: A fitted ``SurrogateModel``.
         X: Input DataFrame (correlations estimated at ``point_index``).
         point_index: Which row of ``X`` to show correlations for.
         n_samples: Number of posterior draws for correlation estimation.
         ax: Matplotlib axes to draw on. Created if ``None``.
-
-    Returns:
-        The matplotlib Figure.
     """
     plt = _import_matplotlib()
     sns = _import_seaborn()
@@ -331,7 +313,7 @@ def correlation_heatmap(
     mask = np.triu(np.ones_like(matrix, dtype=bool))
 
     if ax is None:
-        fig, ax = plt.subplots(figsize=(5, 4.5), layout="constrained")
+        fig, ax = plt.subplots(figsize=(_SUBPLOT_W, _FIG_H), layout="constrained")
     else:
         fig = ax.get_figure()
 
@@ -358,21 +340,15 @@ def convergence_plot(
     metric: str = "r2",
     ax: Axes | None = None,
 ) -> Figure:
-    """Plot LOO metric vs training set size for active learning convergence.
+    """LOO metric vs training set size.
 
-    Shows how model accuracy improves as new points are added via
-    ``suggest_next``. Use this to decide when to stop collecting data
-     -- a plateau indicates diminishing returns from additional experiments.
+    Tracks how accuracy changes as points are added in an active learning
+    loop. Flattening out means more data won't help much.
 
     Args:
-        metrics: List of dicts as returned by ``model.score()``, one per
-            active learning iteration. Each must contain the given *metric*
-            key.
-        metric: Which metric to plot (``"r2"`` or ``"rmse"``).
+        metrics: ``model.score()`` dicts, one per iteration.
+        metric: ``"r2"`` or ``"rmse"``.
         ax: Matplotlib axes to draw on. Created if ``None``.
-
-    Returns:
-        The matplotlib Figure.
     """
     plt = _import_matplotlib()
     _apply_style()
@@ -384,7 +360,7 @@ def convergence_plot(
     n_iters = range(1, len(metrics) + 1)
 
     if ax is None:
-        fig, ax = plt.subplots(figsize=(6, 4.5), layout="constrained")
+        fig, ax = plt.subplots(figsize=(_SUBPLOT_W * 1.25, _FIG_H), layout="constrained")
     else:
         fig = ax.get_figure()
 

@@ -44,9 +44,7 @@ class DataFrameEncoder:
 
         if self._categorical_columns is None:
             self._categorical_columns = [
-                c
-                for c in X.columns
-                if not pd.api.types.is_numeric_dtype(X[c])
+                c for c in X.columns if not pd.api.types.is_numeric_dtype(X[c])
             ]
         self._continuous_columns = [c for c in X.columns if c not in self._categorical_columns]
 
