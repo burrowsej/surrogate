@@ -2,6 +2,9 @@
 models/*
 !models/.gitkeep
 
+# Python bytecode
+__pycache__/
+
 # Hidden files and directories (editors, OS, etc.)
 .*
 !.gitignore

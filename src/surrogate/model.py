@@ -202,9 +202,7 @@ class SurrogateModel:
             # raw shape: (n_points, n_samples) for single-output GP
             samples = raw.T[:, :, np.newaxis]  # → (n_samples, n_points, 1)
         else:
-            raw = self._dgp_emulator.predict(
-                X_enc, method="sampling", sample_size=n_samples
-            )
+            raw = self._dgp_emulator.predict(X_enc, method="sampling", sample_size=n_samples)
             # raw is list of k arrays, each (n_points, N*sample_size)
             total = raw[0].shape[1]
             samples = np.empty((total, n_points, n_out))
@@ -220,9 +218,7 @@ class SurrogateModel:
     # ------------------------------------------------------------------
     # Output correlation
     # ------------------------------------------------------------------
-    def predict_correlation(
-        self, X: pd.DataFrame, n_samples: int = 200
-    ) -> np.ndarray:
+    def predict_correlation(self, X: pd.DataFrame, n_samples: int = 200) -> np.ndarray:
         """Estimate output correlation matrices from posterior samples.
 
         Args:
@@ -245,17 +241,9 @@ class SurrogateModel:
     # ------------------------------------------------------------------
     # Score (LOO cross-validation)
     # ------------------------------------------------------------------
-    def score(self) -> dict:
-        """Leave-one-out cross-validation diagnostics.
-
-        Returns:
-            Dict with keys ``"r2"`` and ``"rmse"``, each a dict mapping
-            output column names to float values.
-        """
+    def _loo_raw(self) -> tuple[np.ndarray, np.ndarray | None]:
+        """Return raw LOO (mean, variance) arrays in scaled output space."""
         self._check_fitted()
-        cols = self._scaler._columns
-        n = self._train_X.shape[0]
-
         if self._resolved_type == "gp":
             mu, var = self._gp_model.loo()
             mu = np.asarray(mu).reshape(-1, 1)
@@ -271,6 +259,41 @@ class SurrogateModel:
                 mu = np.column_stack(result) if isinstance(result, list) else result
                 var = None
             mu = np.asarray(mu)
+        return mu, var
+
+    def loo_predict(self) -> dict[str, pd.DataFrame]:
+        """Return LOO predicted mean, std, and actual values in original scale.
+
+        Returns:
+            Dict with keys ``"mean"``, ``"std"``, and ``"actual"``.
+            Each value is a DataFrame in original output scale.
+        """
+        mu, var = self._loo_raw()
+        cols = self._scaler._columns
+
+        mean_df = self._scaler.inverse_transform(mu)
+
+        if var is not None:
+            std_enc = np.sqrt(np.clip(var, 0, None))
+            std_orig = self._scaler.inverse_transform_std(std_enc)
+        else:
+            std_orig = np.full_like(mu, np.nan)
+        std_df = pd.DataFrame(std_orig, columns=cols)
+
+        actual_df = self._scaler.inverse_transform(self._train_Y)
+
+        return {"mean": mean_df, "std": std_df, "actual": actual_df}
+
+    def score(self) -> dict:
+        """Leave-one-out cross-validation diagnostics.
+
+        Returns:
+            Dict with keys ``"r2"`` and ``"rmse"``, each a dict mapping
+            output column names to float values.
+        """
+        mu, var = self._loo_raw()
+        cols = self._scaler._columns
+        n = self._train_X.shape[0]
 
         Y = self._train_Y
         residuals = Y - mu
@@ -311,9 +334,7 @@ class SurrogateModel:
         X_cand = self._encoder.transform(candidates)
 
         if self._resolved_type == "gp":
-            scores = self._gp_model.metric(
-                X_cand, method=method, score_only=True
-            )
+            scores = self._gp_model.metric(X_cand, method=method, score_only=True)
         else:
             scores = self._dgp_emulator.metric(
                 X_cand,

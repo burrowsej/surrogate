@@ -40,6 +40,17 @@ class TestGPTier:
         # LOO R² should be reasonable on a smooth function
         assert scores["r2"]["out"] > 0.5
 
+    def test_loo_predict(self, numeric_only_data):
+        X, Y = numeric_only_data
+        model = SurrogateModel(model_type="gp")
+        model.fit(X, Y)
+        loo = model.loo_predict()
+        assert set(loo) == {"mean", "std", "actual"}
+        assert loo["mean"].shape == (len(X), 1)
+        assert loo["std"].shape == (len(X), 1)
+        assert loo["actual"].shape == (len(X), 1)
+        assert (loo["std"].values >= 0).all()
+
     def test_sample_shape(self, numeric_only_data):
         X, Y = numeric_only_data
         model = SurrogateModel(model_type="gp")
@@ -97,6 +108,14 @@ class TestDGPTier:
         assert "r2" in scores
         assert "y1" in scores["r2"]
         assert "y2" in scores["r2"]
+
+    def test_loo_predict(self, fitted_model):
+        model, X, _ = fitted_model
+        loo = model.loo_predict()
+        assert set(loo) == {"mean", "std", "actual"}
+        assert loo["mean"].shape == (len(X), 2)
+        assert list(loo["mean"].columns) == ["y1", "y2"]
+        assert loo["actual"].shape == (len(X), 2)
 
 
 class TestAutoTierSelection:

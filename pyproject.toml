@@ -17,6 +17,10 @@ dev = [
     "pytest-cov>=4.0",
     "ruff>=0.4",
 ]
+plot = [
+    "matplotlib>=3.7",
+    "seaborn>=0.13",
+]
 
 [build-system]
 requires = ["hatchling"]

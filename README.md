@@ -58,7 +58,34 @@ loaded = SurrogateModel.load("models/my_model.pkl")
 
 See [examples/basic_usage.py](examples/basic_usage.py) for a full walkthrough.
 
-## Running the example
+## Plotting
+
+Optional diagnostic plots are available when matplotlib and seaborn are installed:
+
+```bash
+uv sync --group plot
+```
+
+```python
+from surrogate.plotting import parity_plot, calibration_plot, slice_plot, correlation_heatmap
+
+parity_plot(model)              # LOO predicted vs actual
+calibration_plot(model)         # Uncertainty calibration curve
+slice_plot(model, X_centre, column="x1")  # 1D input sweep with 95% CI
+correlation_heatmap(model, X)   # Output correlation at a point
+```
+
+See [examples/plotting_example.py](examples/plotting_example.py) for a full walkthrough.
+
+Both examples use `# %%` cell markers and can be run interactively as
+notebooks in VS Code.
+
+> **Note:** dgpsi uses multiprocessing internally. When calling `.fit()` with
+> `parallel=True` (the default) in a notebook or script without an
+> `if __name__ == '__main__':` guard, you may get a `RuntimeError`. Either
+> wrap the call in a guard or pass `parallel=False`.
+
+## Running the examples
 
 ```bash
 uv run python examples/basic_usage.py
@@ -90,6 +117,7 @@ uv run pytest
 | `predict(X)`         | Mean, std, and 95% credible intervals                 |
 | `sample(X, n)`       | Joint posterior samples `(n, points, outputs)`        |
 | `predict_correlation(X)` | Output correlation matrices per point             |
+| `loo_predict()`      | LOO predictions (mean, std, actual)                  |
 | `score()`            | LOO cross-validation (R², RMSE)                       |
 | `suggest_next(candidates)` | Active learning — best next point(s)            |
 | `save(path)` / `load(path)` | Persist and restore fitted models              |
