@@ -21,12 +21,8 @@ class TestSerializationGP:
         orig = model.predict(X)
         restored = loaded.predict(X)
 
-        np.testing.assert_allclose(
-            orig["mean"].values, restored["mean"].values, rtol=1e-10
-        )
-        np.testing.assert_allclose(
-            orig["std"].values, restored["std"].values, rtol=1e-10
-        )
+        np.testing.assert_allclose(orig["mean"].values, restored["mean"].values, rtol=1e-10)
+        np.testing.assert_allclose(orig["std"].values, restored["std"].values, rtol=1e-10)
 
 
 class TestSerializationDGP:

@@ -63,9 +63,7 @@ print("Saved slice.png")
 
 # -- Correlation heatmap --------------------------------------------------------
 
-X_test = pd.DataFrame(
-    {"x1": [0.3, 0.7], "x2": [0.5, 0.2], "category": ["low", "high"]}
-)
+X_test = pd.DataFrame({"x1": [0.3, 0.7], "x2": [0.5, 0.2], "category": ["low", "high"]})
 fig = correlation_heatmap(model, X_test, point_index=0)
 fig.savefig(OUT / "correlation.png", dpi=DPI)
 print("Saved correlation.png")
@@ -95,8 +93,7 @@ for i in range(5):
             "output_1": np.sin(5 * x_new["x1"])
             + x_new["x2"] ** 2
             + np.where(x_new["category"] == "high", 3.0, 0.0),
-            "output_2": 2.0 * (np.sin(5 * x_new["x1"]) + x_new["x2"] ** 2)
-            + 0.5 * x_new["x1"],
+            "output_2": 2.0 * (np.sin(5 * x_new["x1"]) + x_new["x2"] ** 2) + 0.5 * x_new["x1"],
         }
     )
     X_al = pd.concat([X_al, x_new], ignore_index=True)
