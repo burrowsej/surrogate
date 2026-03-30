@@ -71,8 +71,8 @@ def main():
     print()
 
     # ── 7. Save and reload ────────────────────────────────────────────
-    model.save("my_surrogate.pkl")
-    loaded = SurrogateModel.load("my_surrogate.pkl")
+    model.save("models/my_surrogate.pkl")
+    loaded = SurrogateModel.load("models/my_surrogate.pkl")
     reloaded_pred = loaded.predict(X_test)
     print("Predictions after reload match:", np.allclose(
         result["mean"].values, reloaded_pred["mean"].values, atol=1e-6

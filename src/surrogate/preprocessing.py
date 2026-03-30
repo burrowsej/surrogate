@@ -115,7 +115,11 @@ class DataFrameEncoder:
 
 
 class OutputScaler:
-    """Standardises output columns (zero mean, unit variance) with inverse support."""
+    """Standardises output columns (zero mean, unit variance) with inverse support.
+
+    All columns must be continuous (numeric); categorical outputs are not
+    supported.
+    """
 
     def __init__(self):
         self._mean = None

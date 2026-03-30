@@ -2,6 +2,7 @@
 name = "surrogate"
 version = "0.1.0"
 description = "DataFrame-in/DataFrame-out surrogate modelling with uncertainty quantification, powered by Deep Gaussian Processes"
+license = "MIT"
 requires-python = ">=3.10"
 dependencies = [
     "dgpsi>=2.4",

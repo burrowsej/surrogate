@@ -73,8 +73,10 @@ class SurrogateModel:
         """Train the surrogate on input/output DataFrames.
 
         Args:
-            X: Input (independent) variables.
-            Y: Output (dependent) variables.
+            X: Input (independent) variables. May contain both numeric and
+                categorical columns.
+            Y: Output (dependent) variables. All columns must be continuous
+                (numeric); categorical outputs are not supported.
             n_iter: SEM iterations (DGP) or ignored (GP).
             ess_burn: ESS burn-in per SEM step.
             parallel: Use multi-core training for DGP.
@@ -335,14 +337,20 @@ class SurrogateModel:
     # ------------------------------------------------------------------
     # Serialization
     # ------------------------------------------------------------------
-    def save(self, path: str | Path) -> None:
+    _MODELS_DIR = Path("models")
+
+    def save(self, path: str | Path | None = None) -> None:
         """Persist the fitted model to disk via pickle.
 
         Args:
-            path: File path to write the model to.
+            path: File path to write the model to. If a bare filename is given
+                (no directory component), the file is saved inside the
+                ``models/`` directory. Defaults to ``models/surrogate.pkl``.
         """
         self._check_fitted()
-        path = Path(path)
+        path = Path(path) if path is not None else self._MODELS_DIR / "surrogate.pkl"
+        if path.parent == Path("."):
+            path = self._MODELS_DIR / path
         path.parent.mkdir(parents=True, exist_ok=True)
         with open(path, "wb") as f:
             pickle.dump(self, f, protocol=pickle.HIGHEST_PROTOCOL)

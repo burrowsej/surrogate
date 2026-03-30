@@ -1,0 +1,9 @@
+# Saved models
+models/*
+!models/.gitkeep
+
+# Hidden files and directories (editors, OS, etc.)
+.*
+!.gitignore
+!.gitkeep
+!.vscode/
